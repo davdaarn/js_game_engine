@@ -1,11 +1,21 @@
 "use strict"
 
+import * as vertexBuffer from './vertex_buffer.js';
+import * as simpleShader from './shader_support.js';
+
+/** @type {WebGLRenderingContext} */
 let mGL = null;
 
+/** @returns {WebGLRenderingContext} */
 function getGL() { return mGL; }
 
-function initWebGL(htmlCanvasID) {
-  let canvas = document.getElementById(htmlCanvasID);
+function initWebGL() {
+
+  const canvas = document.createElement('canvas');
+  canvas.id = 'GLCanvas';
+  canvas.width = 640;
+  canvas.height = 480;
+  document.querySelector('body').appendChild(canvas);
 
   mGL = canvas.getContext("webgl2") || canvas.getContext("experimental-webgl2");
 
@@ -15,6 +25,16 @@ function initWebGL(htmlCanvasID) {
   }
 
   mGL.clearColor(0.0, 0.8, 0.0, 1.0);
+
+  vertexBuffer.init();
+  simpleShader.init('VertexShader', 'FragmentShader');
+
+}
+
+function drawSquare() {
+  simpleShader.activate();
+
+  mGL.drawArrays(mGL.TRIANGLE_STRIP, 0, 4);
 }
 
 function clearCanvas() {
@@ -22,6 +42,9 @@ function clearCanvas() {
 }
 
 window.onload = function() {
-  initWebGL('GLCanvas');
+  initWebGL();
   clearCanvas();
+  drawSquare();
 }
+
+export { getGL }
